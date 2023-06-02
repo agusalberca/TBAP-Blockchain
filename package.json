@@ -1,0 +1,30 @@
+{
+  "name": "tbap-blockchain",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agusalberca/TBAP-Blockchain.git"
+  },
+  "author": "Agustin Alberca",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/agusalberca/TBAP-Blockchain/issues"
+  },
+  "homepage": "https://github.com/agusalberca/TBAP-Blockchain#readme",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.14.0",
+    "node-fetch": "^2.6.11"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.0",
+    "dotenv": "^16.0.3"
+  }
+}
