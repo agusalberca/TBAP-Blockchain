@@ -61,7 +61,7 @@ contract MyToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
 
     //https://ethereum.stackexchange.com/questions/13862/is-it-possible-to-check-string-variables-length-inside-the-contract
     function utfStringLength(string memory str) 
-        pure internal returns (uint256 length) 
+        internal pure returns (uint256 length) 
     {
         uint256 i = 0;
         bytes memory string_rep = bytes(str);
@@ -95,10 +95,10 @@ contract MyToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
         );
 
         uint256 tokenId = _tokenIdCounter.current();
-        rewards[tokenId] = tData;
         _tokenIdCounter.increment();
-        _setTokenURI(tokenId, uri);
         _safeMint(beneficiary, tokenId);
+        _setTokenURI(tokenId, uri);
+        rewards[tokenId] = tData;
         emit NewReward(beneficiary, tokenId, tData);
     }
 
@@ -125,11 +125,11 @@ contract MyToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
         TokenData[] memory userRewards = new TokenData[](userBalance);
 
         for (uint256 i = 0; i < userBalance; i++) {
-        uint256 rewardId = tokenOfOwnerByIndex(user, i);
-        (string memory title, uint16 issuerId, uint256 createdAt) = getRewardOverview(rewardId);
+            uint256 rewardId = tokenOfOwnerByIndex(user, i);
+            (string memory title, uint16 issuerId, uint256 createdAt) = getRewardOverview(rewardId);
 
-        userRewards[i] = TokenData(title, issuerId, createdAt);
-        userRewardIds[i] = rewardId;
+            userRewards[i] = TokenData(title, issuerId, createdAt);
+            userRewardIds[i] = rewardId;
         }
 
         return (userRewardIds, userRewards);
@@ -145,26 +145,32 @@ contract MyToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
         );
     }
 
+    function renounceOwnership()
+        public view override onlyOwner 
+    {
+        revert("Can't renounceOwnership here"); //not possible with this smart contract
+    }
+
     // The following functions are overrides required by Solidity.
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
-        internal
-        override(ERC721, ERC721Enumerable)
+        internal override(ERC721, ERC721Enumerable)
     {
-        require(from == address(0) || to == address(0), "NonTransferrableERC721Token: non transferrable");
+        require(from == address(0) || to == address(0), "Token ownership is non transferrable");
         super._beforeTokenTransfer(from, to, tokenId, batchSize);
     }
 
     function _burn(uint256 tokenId) 
-        internal 
-        override(ERC721, ERC721URIStorage) 
+        internal override(ERC721, ERC721URIStorage) 
     {
         super._burn(tokenId);
     }
 
+    function _baseURI() internal view override returns (string memory) {
+        return baseTokenURI;
+    }
+
     function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
+        public view override(ERC721, ERC721URIStorage)
         returns (string memory)
     {
         require(_exists(tokenId), "Nonexistent token");
@@ -172,8 +178,7 @@ contract MyToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     }
 
     function supportsInterface(bytes4 interfaceId)
-        public
-        view
+        public view 
         override(ERC721, ERC721Enumerable, ERC721URIStorage)
         returns (bool)
     {
