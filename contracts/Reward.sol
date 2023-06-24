@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
  * @author Juan Ignacio Borrelli
  */
 
-contract MyToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
+contract RewardToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     //using keywords
     using Strings for uint256;
     using Counters for Counters.Counter;
@@ -84,7 +84,7 @@ contract MyToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     }
 
     //minting methods
-    function _mint(address beneficiary, string calldata title, uint16 issuerId, string memory uri) 
+    function _mint(address beneficiary, string calldata title, uint16 issuerId, string calldata uri) 
         internal 
     {
         uint256 createdAt = block.timestamp;
@@ -102,20 +102,65 @@ contract MyToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
         emit NewReward(beneficiary, tokenId, tData);
     }
 
-    function mintGift(address beneficiary, string calldata title, uint16 issuerId, string memory uri)
+    function mintGift(address beneficiary, string calldata title, uint16 issuerId, string calldata uri)
         external onlyOwner
     {
         _mint(beneficiary, title, issuerId, uri);
     }
 
-    function mint(string calldata title, uint16 issuerId, uint256 nonce, string memory uri, bytes calldata signature ) 
+    function mint(string calldata title, uint16 issuerId, uint256 nonce, string calldata uri, bytes calldata signature ) 
         external validTitle(title) consumeNonce(nonce)
     {
-        bytes32 message = keccak256(abi.encodePacked(msg.sender, title, issuerId, nonce, address(this)));
+        bytes32 hashData = keccak256(abi.encodePacked(title, issuerId, nonce, uri, address(this)));
+        bytes32 message = ECDSA.toEthSignedMessageHash(hashData);
         require(ECDSA.recover(message,signature) == signer, "Invalid backend signature. Mint not allowed.");
         _mint(msg.sender, title, issuerId, uri);
     }
 
+    function test_signature_string(string calldata title, bytes calldata signature) 
+        external view
+    {
+        bytes32 message = keccak256(abi.encodePacked(title, address(this)));
+        require(ECDSA.recover(message,signature) == signer, "Invalid backend signature. Mint not allowed.");
+    }
+
+    function test_signature_string_get(string calldata title, bytes calldata signature) 
+        external view
+        returns (address)
+    {
+        bytes32 message = keccak256(abi.encodePacked(title, address(this)));
+        return (ECDSA.recover(message,signature));
+    }
+
+    function test_signature_uint(uint16 issuerId, bytes calldata signature) 
+        external view
+    {
+        bytes32 message = keccak256(abi.encodePacked(issuerId, address(this)));
+        require(ECDSA.recover(message,signature) == signer, "Invalid backend signature. Mint not allowed.");
+    }
+
+    function test_signature_uint_get(uint16 issuerId, bytes calldata signature) 
+        external view
+        returns (address)
+    {
+        bytes32 message = keccak256(abi.encodePacked(issuerId, address(this)));
+        return (ECDSA.recover(message,signature));
+    }
+    
+    function test_signature_hash(bytes32 data, bytes memory signature) 
+        external view
+    {
+        bytes32 message = ECDSA.toEthSignedMessageHash(data);
+        require(ECDSA.recover(message,signature) == signer, "Invalid backend signature. Mint not allowed.");
+    }
+
+    function test_signature_hash_get(bytes32 data, bytes memory signature) 
+        external pure
+        returns (address)
+    {   
+        bytes32 message = ECDSA.toEthSignedMessageHash(data);
+        return (ECDSA.recover(message, signature));
+    }
     //contract getters
     function getUserRewards(address user) 
         external view returns (uint256[] memory, TokenData[] memory) 
