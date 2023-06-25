@@ -35,30 +35,6 @@ function getContract(contractName, hre) {
     return getContractAt(hre, contractName, getEnvVariable("NFT_CONTRACT_ADDRESS"), account);
 }
 
-//Example of python code to sign a message
-// need to migrate this code to javascript
-// def create_mint_signature(title, issuerId, nonce, uri):
-//     print(CONTRACT_ADDRESS)
-//     sig = web3.Web3.solidity_keccak([ "string", "uint16", "uint256", "string", "address" ],
-//                                 [ title, issuerId, nonce, uri, CONTRACT_ADDRESS])
-//     message = encode_defunct(hexstr=sig.hex())           
-//     signed_message = w3.eth.account.sign_message(message, SIGNER_WALLET_PRIV_KEY)
-//     signature = web3.Web3.to_hex(signed_message.signature)
-//     print(verify_message(message, signature, WALLET_PUB_ADDRESS))
-//     return signature
-
-// def create_test_signature(title):
-//     sig = web3.Web3.solidity_keccak([ "uint16", "address" ],
-//                                 [ title, CONTRACT_ADDRESS])
-//     message = encode_defunct(hexstr=sig.hex())           
-//     signed_message = w3.eth.account.sign_message(message, SIGNER_WALLET_PRIV_KEY)
-//     signature = web3.Web3.to_hex(signed_message.signature)
-//     print(verify_message(message, signature, WALLET_PUB_ADDRESS))
-//     return signature
-
-// def verify_message(message, signature, address):
-//     return w3.eth.account.recover_message(message, signature=signature) == address
-
 
 module.exports = {
     getEnvVariable,

@@ -1,4 +1,5 @@
 > Toda la info a seguir la saque de acá: https://docs.openzeppelin.com/learn/
+Firma ECDSA: https://blog.cabala.co/how-to-verify-off-chain-results-and-whitelist-with-ecdsa-in-solidity-using-openzeppelin-ethers-js-ba4c85521711
 ### Commands
 //compilar contrato
 npx hardhat compile

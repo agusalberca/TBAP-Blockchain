@@ -7,8 +7,10 @@ const { getAccount, getEnvVariable } = require("./helpers");
 // });
 
 task("deploy", "Deploys the RewardToken.sol contract").setAction(async function (taskArguments, hre) {
-    const nftContractFactory = await hre.ethers.getContractFactory("RewardToken", getAccount());
-    const nft = await nftContractFactory.deploy(getEnvVariable("SIGNER_ADDRESS"));
+    const nftContractFactory = await hre.ethers.getContractFactory(
+                                            "RewardToken",getAccount());
+    const nft = await nftContractFactory.deploy(
+        getEnvVariable("SIGNER_ADDRESS"), getEnvVariable("BACKEND_BASE_URI"));
     console.log(`Contract deployed to address: ${nft.address}`);
     
 });
@@ -24,10 +26,8 @@ task("deploy-local", "Deploys the RewardToken.sol contract on local hardhat netw
     console.log(`SIGNERS: ${signers[0].address }`)
     //deploy contract
     const ContractFactory = await hre.ethers.getContractFactory("RewardToken");
-    const contract = await ContractFactory.deploy(getEnvVariable("SIGNER_ADDRESS"));
-    
-    // const ContractFactory = await hre.ethers.getContractFactory("RewardToken", getAccount());
-    // const contract = await ContractFactory.deploy(getEnvVariable("SIGNER_ADDRESS"));
+    const contract = await ContractFactory.deploy(
+        getEnvVariable("SIGNER_ADDRESS"),getEnvVariable("BACKEND_BASE_URI"));
     console.log(`Contract deployed to address: ${contract.address}`);
     //get contract owner
     console.log(`Contract owner: ${await contract.owner()}`);
