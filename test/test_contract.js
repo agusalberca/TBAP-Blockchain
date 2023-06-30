@@ -148,6 +148,32 @@ describe("Contract Unit tests", function () {
           .to.be.revertedWith("Title is too long");
       });
     });
+
+    
+    describe("Get tokens data", function () {
+      
+      it.only("Test get user tokens", async function () {
+        const tokenData = {
+          address: "", title: "Test Token", 
+          issuerId: 1, uri: ""
+        }
+        for (let i = 0; i < 10; i++) {
+          await contract.connect(deployer).mintGift(
+            bob.address, `${tokenData.title} ${i}`, 
+            tokenData.issuerId, `${i}`);
+        }
+        for (let i = 10; i < 20; i++) {
+          await contract.connect(deployer).mintGift(
+            alice.address, `${tokenData.title} ${i}`, 
+            tokenData.issuerId, `${i}`);
+        }
+
+        expect(await contract.balanceOf(bob.address)).to.eq(10)
+
+        const tokens = await contract.getUserRewards(bob.address);
+        console.log(`Tokens: ${tokens}`)
+      });     
+    });
     
 });
   
@@ -155,3 +181,4 @@ describe("Contract Unit tests", function () {
 // Helpful links:
 // Tests using chai: https://docs.openzeppelin.com/learn/writing-automated-tests#setting-up-a-testing-environment
 // Hardhat Guide: How to Unit Test a Contract: https://www.chainshot.com/article/how-to-write-unit-tests
+

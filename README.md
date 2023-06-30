@@ -12,5 +12,4 @@ Este es el repositorio inicial del modulo de blockchain del proyecto de tesina T
 - Completar variables de entorno en un archivo `.env` en el directorio raiz. Un ejemplo de las mismas se encuentra en el archivo `.env.example`
 
 
-
-> Se encuentran algunas notas de ayuda para el uso del módulo en el archivo NOTAS.md
+> Se encuentran algunas notas de ayuda para el uso del módulo en el archivo NOTES.md

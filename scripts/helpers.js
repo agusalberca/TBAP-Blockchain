@@ -16,30 +16,55 @@ function getEnvVariable(key, defaultValue) {
 
 // Helper method for getting network data
 function getNetwork() {
-    return ethers.providers.getNetwork("homestead");
+    return ethers.providers.getNetwork(getEnvVariable("NETWORK", "homestead"));
 }
 
 // Helper method for fetching a connection provider to the Ethereum network
 function getProvider() {
-    return ethers.getDefaultProvider(getEnvVariable("NETWORK", "homestead"));
+    const network = getEnvVariable("NETWORK", "homestead");
+    if (network === "homestead") {
+        return hre.ethers.getDefaultProvider();
+    }
+    else{
+        return new ethers.providers.EtherscanProvider(network , getEnvVariable("POLYGONSCAN_API_KEY"))
+    }
 }
 
 // Helper method for fetching a wallet account using an environment variable for the PK
-function getAccount() {
-    return new ethers.Wallet(getEnvVariable("ACCOUNT_PRIVATE_KEY"), getProvider());
+function getDeployerAccount() {
+    return new ethers.Wallet(getEnvVariable("DEPLOYER_PRIVATE_KEY"), getProvider());
+}
+
+// Helper method for fetching a wallet account using an environment variable for the PK
+function getSignerAccount() {
+    return new ethers.Wallet(getEnvVariable("SIGNER_PRIVATE_KEY"), getProvider());
+}
+
+// Helper method for fetching a wallet account using an environment variable for the PK
+function getTesterAccount() {
+    return new ethers.Wallet(getEnvVariable("TEST_PRIVATE_KEY"), getProvider());
 }
 
 // Helper method for fetching a contract instance at a given address
 function getContract(contractName, hre) {
-    const account = getAccount();
-    return getContractAt(hre, contractName, getEnvVariable("NFT_CONTRACT_ADDRESS"), account);
+    // const account = getDeployerAccount();
+    return getContractAt(hre, contractName, getEnvVariable("NFT_CONTRACT_ADDRESS"));
 }
 
+function signMintData(tokenData){
+    const account = getSignerAccount();
+    const message = ethers.utils.solidityKeccak256(
+        [ "string", "uint16", "uint256", "string", "address" ], 
+        [ tokenData.title, tokenData.issuerId, tokenData.nonce, tokenData.uri, getEnvVariable("NFT_CONTRACT_ADDRESS") ]);
+    return account.signMessage(ethers.utils.arrayify(message));
+}
 
 module.exports = {
     getEnvVariable,
     getProvider,
-    getAccount,
+    getDeployerAccount,
+    getTesterAccount,
     getContract,
-    getNetwork
+    getNetwork,
+    signMintData
 }

@@ -1,36 +1,32 @@
-> Toda la info a seguir la saque de acá: https://docs.openzeppelin.com/learn/
-Firma ECDSA: https://blog.cabala.co/how-to-verify-off-chain-results-and-whitelist-with-ecdsa-in-solidity-using-openzeppelin-ethers-js-ba4c85521711
-### Commands
-//compilar contrato
-npx hardhat compile
-
-//Version inicial de deployment 
-//(se puede hacer mejor utilizando el formato enunciado màs adelante)
-npx hardhat run --network rinkeby scripts/deploy.js 
-
-//check-balance no es nativo, se importa a traves de hardhat.config.js
-npx hardhat check-balance
-
-//deployment a travès de hardhat 
-npx hardhat deploy
-
-//minteo a travès de hardhat (no hace falta tener una GUI para interactuar con el contrato)
-npx hardhat mint --address 0xb9720BE63Ea8896956A06d2dEd491De125fD705E
+> Toda la info a seguir la saque de acá: 
 
 
-### Flujo de deployment local
-//compila los contratos del proyecto que sean .sol
-npx hardhat compile
-//en otra terminal, deployar contrato
-npx hardhat deploy-local
+### Flujo de deployment
+- Compilar contrato : `npx hardhat compile`
+- Ejecutar tests de contrato: `npx hardhat test`
+- Deploy a testnet (configurar .env): `npx hardhat run --network mumbai scripts/deploy_testnet.js`
+- Verificar contrato: `npx hardhat verify --network mumbai {contract_address} {contract_constructor_parameters_list}`
+- Ejecutar tasks: `npx hardhat {task_name} {task_params} --network mumbai`
+- Ejemplos varios
+    - npx hardhat mint-gift --network mumbai
+    - npx hardhat mint --network mumbai
+    - npx hardhat get-user-rewards --network mumbai
+    - npx hardhat get-user-rewards --address 0xf1dD71895e49b1563693969de50898197cDF3481 --network mumbai
+
+
 #### Comandos de interacción
-//Ejemplo base para correr un script (Debe respetar estructura main())
-npx hardhat run --network hardhat scripts/my-script.js
+- Ejemplo base para correr un script (Debe respetar estructura main()):
+    npx hardhat run --network mumbai {script_path}
 
-//Ejemplo base para correr una task definida
-npx hardhat task-name --network hardhat
+- Ejemplo base para correr una task definida
+    npx hardhat task-name --network mumbai
 
-//Listar tokens de cuenta de testing
-npx hardhat getUserRewards --network hardhat
+- Listar tokens de cuenta de testing
+    npx hardhat getUserRewards --network mumbai
 
-npx hardhat test tests/test_contract.js
+### Links de interes
+- [General - OpenZeppelin](https://docs.openzeppelin.com/learn/)
+- [General - Polygon](https://wiki.polygon.technology/docs/develop/developer-resources)
+- [Firma ECDSA](https://blog.cabala.co/how-to-verify-off-chain-results-and-whitelist-with-ecdsa-in-solidity-using-openzeppelin-ethers-js-ba4c85521711)
+- [Desarrollo en polygon](https://wiki.polygon.technology/docs/develop/getting-started/)
+- [Polygon hardhat network config](https://wiki.polygon.technology/docs/develop/hardhat/)
