@@ -35,3 +35,19 @@ task("mint", "Mints NFT for address")
         tokenData.nonce, tokenData.uri, signature);
     console.log(`Response: ${txResponse}`);
 });
+
+task("get-signature", "Generates signature for minting NFT")
+.addParam("beneficiary", "The address to receive a token", getEnvVariable("TEST_ADDRESS"))
+.addParam("title", "The title of the nft", "Backend TEST")
+.addParam("issuerId", "The issuerId of the nft", "1")
+.addParam("uri", "The uri of the nft", "test_uri")
+.setAction(async function (taskArguments, hre) {
+    const tokenData = {
+        title: taskArguments.title, issuerId: parseInt(taskArguments.issuerId), 
+        nonce: 1, uri: taskArguments.uri
+    }
+    const contract = await getContract("RewardToken", hre);
+    const testerAcc = await getTesterAccount()
+    const signature = await signMintData(tokenData);
+    console.log(`Signature: ${signature}`);
+});
