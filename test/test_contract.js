@@ -118,6 +118,14 @@ describe("Contract Unit tests", function () {
           contract.tokenURI(10000))
           .to.be.reverted;
       });
+      it("Test reverse lookup", async function () {
+        const data = await contract.tokenOfURI(`${baseUri}${tokenData.uri}`)
+        expect(data[0].toNumber()).eq(0)
+        expect(data[1]).eq(tokenData.title)
+        expect(data[2]).eq(tokenData.issuerId)
+        expect(data[4]).eq(`${baseUri}${tokenData.uri}`)
+
+      });
     });
 
     describe("Data validness tests", function () {
@@ -152,7 +160,7 @@ describe("Contract Unit tests", function () {
     
     describe("Get tokens data", function () {
       
-      it.only("Test get user tokens", async function () {
+      it("Test get user tokens", async function () {
         const tokenData = {
           address: "", title: "Test Token", 
           issuerId: 1, uri: ""
@@ -160,18 +168,18 @@ describe("Contract Unit tests", function () {
         for (let i = 0; i < 10; i++) {
           await contract.connect(deployer).mintGift(
             bob.address, `${tokenData.title} ${i}`, 
-            tokenData.issuerId, `${i}`);
+            tokenData.issuerId, `${i*100}`);
         }
         for (let i = 10; i < 20; i++) {
           await contract.connect(deployer).mintGift(
             alice.address, `${tokenData.title} ${i}`, 
-            tokenData.issuerId, `${i}`);
+            tokenData.issuerId, `${i*10}`);
         }
 
         expect(await contract.balanceOf(bob.address)).to.eq(10)
 
         const tokens = await contract.getUserRewards(bob.address);
-        console.log(`Tokens: ${tokens}`)
+        console.log(tokens)
       });     
     });
     

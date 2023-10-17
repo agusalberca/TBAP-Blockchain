@@ -59,6 +59,18 @@ function signMintData(tokenData){
     return account.signMessage(ethers.utils.arrayify(message));
 }
 
+function print_transaction(txResponse){
+    console.log(`Transaction hash: ${txResponse.hash}`);
+    console.log(`Transaction confirmed: ${txResponse.confirmations}`);
+    console.log(`Transaction from: ${txResponse.from}`);
+    console.log(`Transaction to: ${txResponse.to}`);
+    console.log(`Transaction value: ${txResponse.value}`);
+    console.log(`Transaction gasPrice: ${txResponse.gasPrice}`);
+    console.log(`Transaction gasLimit: ${txResponse.gasLimit}`);
+    console.log(`Transaction blockNumber: ${txResponse.blockNumber}`);
+    console.log(`Transaction blockHash: ${txResponse.blockHash}`);
+}
+
 module.exports = {
     getEnvVariable,
     getProvider,
@@ -66,5 +78,6 @@ module.exports = {
     getTesterAccount,
     getContract,
     getNetwork,
-    signMintData
+    signMintData,
+    print_transaction
 }

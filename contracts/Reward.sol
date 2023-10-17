@@ -26,7 +26,18 @@ contract RewardToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
         string title;
         uint16 issuerId;
         uint256 createdAt;
+    }    
+    
+    struct TokenOverview{
+        uint256 tokenId;
+        string title;
+        uint16 issuerId;
+        uint256 createdAt;
+        string uri;
     }
+
+    //For reverse lookup
+    mapping(string => uint256) private uriToTokenId;
 
     mapping(uint256 => TokenData) public rewards;
     mapping(uint256 => bool) public usedNonces;
@@ -100,6 +111,7 @@ contract RewardToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
         _safeMint(beneficiary, tokenId);
         _setTokenURI(tokenId, uri);
         rewards[tokenId] = tData;
+        uriToTokenId[uri] = tokenId;
         emit NewReward(beneficiary, tokenId, tData);
     }
 
@@ -119,30 +131,29 @@ contract RewardToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     }
     //contract getters
     function getUserRewards(address user) 
-        external view returns (uint256[] memory, TokenData[] memory) 
+        external view returns (TokenOverview[] memory) 
     {
         uint256 userBalance = balanceOf(user);
-        uint256[] memory userRewardIds = new uint256[](userBalance);
-        TokenData[] memory userRewards = new TokenData[](userBalance);
+        TokenOverview[] memory userRewards = new TokenOverview[](userBalance);
 
         for (uint256 i = 0; i < userBalance; i++) {
             uint256 rewardId = tokenOfOwnerByIndex(user, i);
-            (string memory title, uint16 issuerId, uint256 createdAt) = getRewardOverview(rewardId);
-
-            userRewards[i] = TokenData(title, issuerId, createdAt);
-            userRewardIds[i] = rewardId;
+            (uint256 tokenId, string memory title, uint16 issuerId, uint256 createdAt, string memory uri) = getRewardOverview(rewardId);
+            userRewards[i] = TokenOverview(tokenId, title, issuerId, createdAt, uri);
         }
 
-        return (userRewardIds, userRewards);
+        return userRewards;
     }
 
     function getRewardOverview(uint256 tokenId) 
-        public view returns (string memory, uint16, uint256)
+        public view returns (uint256, string memory, uint16, uint256, string memory)
     {
         return (
-        rewards[tokenId].title,
-        rewards[tokenId].issuerId,
-        rewards[tokenId].createdAt
+            tokenId,
+            rewards[tokenId].title,
+            rewards[tokenId].issuerId,
+            rewards[tokenId].createdAt,
+            tokenURI(tokenId)
         );
     }
 
@@ -176,6 +187,20 @@ contract RewardToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     {
         require(_exists(tokenId), "ERC721URIStorage: URI query for nonexistent token");
         return super.tokenURI(tokenId);
+    }
+
+    function tokenOfURI(string memory uri) 
+        external view 
+        returns (uint256, string memory, uint16, uint256, string memory) 
+    {
+        uint256 tokenId = uriToTokenId[uri];
+        return (
+            tokenId,
+            rewards[tokenId].title,
+            rewards[tokenId].issuerId,
+            rewards[tokenId].createdAt,
+            uri
+        );
     }
 
     function supportsInterface(bytes4 interfaceId)

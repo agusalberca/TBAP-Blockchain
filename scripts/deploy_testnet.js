@@ -2,15 +2,22 @@
 const { getEnvVariable } = require("./helpers");
 
 async function main () {
-    // Our code will go here
     const accounts = await ethers.provider.listAccounts();
-    console.log(`Deployer account: ${accounts[0]}`);
+    const connected = await ethers.provider.getBlockNumber() !== null;
+    console.log(`Provider connection: ${ connected }`);
+    const gasPrice = await ethers.provider.getGasPrice();
+    const increasedGasPrice = gasPrice.mul(500).div(100); // Increase by 10%
+    console.log(`Gas price: ${ gasPrice.toString() }`);
     const ContractFactory = await ethers.getContractFactory('RewardToken');
-    console.log('Deploying Contract...');
+    console.log(`Deployer account: ${ContractFactory.signer.address }`);
     const contract = await ContractFactory.deploy(
-        getEnvVariable("SIGNER_ADDRESS"), getEnvVariable("BACKEND_BASE_URI")
-    );
-    await contract.deployed();
+      getEnvVariable("SIGNER_ADDRESS"), getEnvVariable("BACKEND_BASE_URI"),
+      { gasPrice: increasedGasPrice}
+      );
+    // console.log('Contract data: ', contract);
+    console.log('Deploying Contract...');
+    response = await contract.deployed();
+    console.log('Response: ', response)
     console.log('Contract deployed to:', contract.address);
   }
   
